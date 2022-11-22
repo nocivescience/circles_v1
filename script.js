@@ -3,71 +3,71 @@
 		var Dot = function (size, color) {
 			this.size = size;
 			if(size < 20) {
-				this.speed = 15;
+				this.speedX = 15*Math.random();
+				this.speedY=15*Math.random()
 			} else if(size < 30) {
-				this.speed = 10;
+				this.speedX = 10*Math.random();
+				this.speedY = 10*Math.random();
 			} else {
-				this.speed = 5;
+				this.speedX = 5*Math.random();
+				this.speedY=5*Math.random()
 			}
 			this.color = color;
-			this.xpos = Math.random() * screen.availWidth - this.size;
-			this.ypos = Math.random() * screen.availHeight - this.size;
-			//this.ypos = 100 + 500 * (canvas.width-this.xpos)/canvas.width + 100 * Math.sin(this.offset + this.xpos / 500);
+			this.xpos = Math.random() * screen.availWidth - this.size+150;
+			this.ypos = Math.abs(Math.random() * screen.availHeight - this.size);
+			if(this.xpos<100){
+				this.xpos=100
+			}
+			if(this.xpos>maxX-100){
+				this.xpos=maxX-100
+			}
+			if(this.ypos<100){
+				this.ypos=100
+			}
+			if(this.ypos>maxY-100){
+				this.ypos=maxY-100
+			}
 			this.offset = 100 * Math.random();
 		};
-
 		Dot.prototype.tick = function() {
-			if(this.xpos > maxX) {
-				this.xpos = -this.size;
-				this.offset = 100 * Math.random();
-			} else {
-				this.xpos += this.speed;
+			if(this.xpos > maxX-this.size) {
+				this.speedX*=-1;
 			}
-
-			/*if(this.ypos > maxY)
-					{
-						//this.ypos = 300*Math.random();
-						this.ypos = -this.size;
-						//this.offset = new Number(100 * Math.random());
-					}
-					else
-					{
-						this.ypos += this.speed;
-					}*/
-			this.ypos += this.speed;
-			if(this.ypos > canvas.height) {
-				//this.ypos = 300*Math.random();
-				this.ypos = -this.size;
-				//this.offset = new Number(100 * Math.random());
+			if(this.xpos<this.size){
+				this.speedX*=-1
 			}
-			//this.ypos = 100 + 500 * (canvas.width-this.xpos)/canvas.width + 100 * Math.sin(this.offset + this.xpos / 500);
+			if(this.ypos > maxY-this.size){
+				this.speedY *= -1;
+			}
+			if(this.ypos < this.size){
+				this.speedY *= -1;
+			}
+			this.xpos+=this.speedX;
+			this.ypos+=this.speedY
 		};
-
+		Dot.prototype.named= function(){
+			context.font=`${this.size/2}px Arial`;
+			context.fillStyle='white';
+			context.fillText('AuCl',this.xpos-this.size+10,this.ypos+this.size+10);
+		}
 		Dot.prototype.draw = function() {
 			context.shadowColor = this.color;
-			//context.shadowBlur = 7;
 			context.fillStyle = this.color;
 			context.beginPath();
 			context.arc(this.xpos, this.ypos, this.size, 0, Math.PI * 2, true);
 			context.closePath();
 			context.fill();
-			//context.fillRect(this.xpos, this.ypos, this.size, this.size);
 		};
-
 		var reDraw = function() {
 			context.clearRect(0, 0, canvas.width, canvas.height);
 			for(var dot in dots) {
 				dots[dot].draw();
 				dots[dot].tick();
+				dots[dot].named();
 			}
 		};
-
-		//document.body.style['background'] = 'url("//static.bitcasa.com/images/greenBG.jpg") no-repeat top center #1F731F';
-		//gray colors
-		//use colours[Math.floor(4 * Math.random())]
-		//eg bit = new Bit(10 + 40 * Math.random(), colours[Math.floor(4 * Math.random())]);
-		//var colours = ['#F5F5F5', '#A9A9A9', '#808080', '#303030'],
-		maxX = screen.availWidth + 40;
+		maxX = screen.availWidth;
+		maxY = screen.availHeight;
 		var canvas = document.getElementById('background');
 		canvas.width = screen.availWidth;
 		canvas.height = screen.availHeight;
@@ -80,9 +80,6 @@
 			dot = new Dot(10 + 40 * Math.random(), '#' + Math.floor(Math.random() * 16777215).toString(16));
 			dots[i] = dot;
 		}
-
-		setInterval(reDraw, 50);
-
-
+		setInterval(reDraw, 30);
 	}
 })();
